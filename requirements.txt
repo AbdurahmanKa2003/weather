@@ -1,0 +1,8 @@
+# my-app-weather/requirements.txt
+
+Flask==2.0.3
+requests==2.27.1
+flask-cors==3.0.10
+pytest==7.1.2
+Werkzeug==2.0.3
+geopy==2.2.0

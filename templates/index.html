@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Прогноз погоды</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1 {
+            font-size: 24px;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        #weather-result {
+            margin-top: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Прогноз погоды</h1>
+    <form id="weather-form">
+        <input type="text" id="city" name="city" placeholder="Введите город" required>
+        <button type="submit">Узнать погоду</button>
+    </form>
+    <div id="weather-result"></div>
+
+    <script>
+        document.getElementById('weather-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const city = document.getElementById('city').value;
+            fetch(`/weather?city=${city}`)
+                .then(response => response.json())
+                .then(data => {
+                    const resultDiv = document.getElementById('weather-result');
+                    resultDiv.innerHTML = '';
+
+                    if (data.error) {
+                        resultDiv.innerHTML = `<p>${data.error}</p>`;
+                        return;
+                    }
+
+                    const temperatures = data.hourly.temperature_2m.slice(0, 24); 
+                    const times = data.hourly.time.slice(0, 24); 
+                    let resultHtml = '<table><tr><th>Время</th><th>Температура (°C)</th></tr>';
+
+                    for (let i = 0; i < temperatures.length; i++) {
+                        resultHtml += `<tr><td>${new Date(times[i]).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}</td><td>${temperatures[i]}°C</td></tr>`;
+                    }
+
+                    resultHtml += '</table>';
+                    resultDiv.innerHTML = `<h2>Прогноз температуры для ${city}</h2>${resultHtml}`;
+                });
+        });
+    </script>
+</body>
+</html>
